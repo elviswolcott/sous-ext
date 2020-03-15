@@ -13,6 +13,7 @@ process.on('unhandledRejection', err => {
 
 // Ensure environment variables are read.
 require('../config/env');
+process.env['INLINE_RUNTIME_CHUNK'] = false;
 
 
 const path = require('path');
