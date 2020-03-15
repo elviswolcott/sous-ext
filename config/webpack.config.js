@@ -137,25 +137,30 @@ module.exports = function(webpackEnv) {
       : isEnvDevelopment && 'cheap-module-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
-    entry: [
-      // Include an alternative client for WebpackDevServer. A client's job is to
-      // connect to WebpackDevServer by a socket and get notified about changes.
-      // When you save a file, the client will either apply hot updates (in case
-      // of CSS changes), or refresh the page (in case of JS changes). When you
-      // make a syntax error, this client will display a syntax error overlay.
-      // Note: instead of the default WebpackDevServer client, we use a custom one
-      // to bring better experience for Create React App users. You can replace
-      // the line below with these two lines if you prefer the stock client:
-      // require.resolve('webpack-dev-server/client') + '?/',
-      // require.resolve('webpack/hot/dev-server'),
-      isEnvDevelopment &&
-        require.resolve('react-dev-utils/webpackHotDevClient'),
-      // Finally, this is your app's code:
-      paths.appIndexJs,
-      // We include the app code last so that if there is a runtime error during
-      // initialization, it doesn't blow up the WebpackDevServer client, and
-      // changing JS code would still trigger a refresh.
-    ].filter(Boolean),
+    entry: {
+      // CRA bootstrapped React app
+      popup: [
+        // Include an alternative client for WebpackDevServer. A client's job is to
+        // connect to WebpackDevServer by a socket and get notified about changes.
+        // When you save a file, the client will either apply hot updates (in case
+        // of CSS changes), or refresh the page (in case of JS changes). When you
+        // make a syntax error, this client will display a syntax error overlay.
+        // Note: instead of the default WebpackDevServer client, we use a custom one
+        // to bring better experience for Create React App users. You can replace
+        // the line below with these two lines if you prefer the stock client:
+        // require.resolve('webpack-dev-server/client') + '?/',
+        // require.resolve('webpack/hot/dev-server'),
+        isEnvDevelopment &&
+          require.resolve('react-dev-utils/webpackHotDevClient'),
+        // Finally, this is your app's code:
+        paths.appIndexJs,
+        // We include the app code last so that if there is a runtime error during
+        // initialization, it doesn't blow up the WebpackDevServer client, and
+        // changing JS code would still trigger a refresh.
+      ].filter(Boolean),
+      // other scripts for the extension
+      background: paths.appBackgroundJs,
+    },
     output: {
       // The build folder.
       path: isEnvProduction ? paths.appBuild : undefined,
@@ -164,14 +169,14 @@ module.exports = function(webpackEnv) {
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
       filename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].js'
+        ? 'static/js/[name].js'
         : isEnvDevelopment && 'static/js/bundle.js',
       // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].chunk.js'
-        : isEnvDevelopment && 'static/js/[name].chunk.js',
+        ? 'static/js/[name].js'
+        : isEnvDevelopment && 'static/js/[name].js',
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
       // We inferred the "public path" (such as / or /my-project) from homepage.
@@ -354,7 +359,7 @@ module.exports = function(webpackEnv) {
               loader: require.resolve('url-loader'),
               options: {
                 limit: imageInlineSizeLimit,
-                name: 'static/media/[name].[hash:8].[ext]',
+                name: 'static/media/[name].[ext]',
               },
             },
             // Process application JS with Babel.
@@ -496,7 +501,7 @@ module.exports = function(webpackEnv) {
               // by webpacks internal loaders.
               exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
               options: {
-                name: 'static/media/[name].[hash:8].[ext]',
+                name: 'static/media/[name].[ext]',
               },
             },
             // ** STOP ** Are you adding a new loader?
@@ -569,8 +574,8 @@ module.exports = function(webpackEnv) {
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
-          filename: 'static/css/[name].[contenthash:8].css',
-          chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+          filename: 'static/css/[name].css',
+          chunkFilename: 'static/css/[name].css',
         }),
       // Generate an asset manifest file with the following content:
       // - "files" key: Mapping of all asset filenames to their corresponding
@@ -586,7 +591,8 @@ module.exports = function(webpackEnv) {
             manifest[file.name] = file.path;
             return manifest;
           }, seed);
-          const entrypointFiles = entrypoints.main.filter(
+          console.log(entrypoints);
+          const entrypointFiles = entrypoints.popup.filter(
             fileName => !fileName.endsWith('.map')
           );
 
