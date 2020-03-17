@@ -13,11 +13,10 @@
   "name": "sous",
   "description": "Skip to the good part.",
   "permissions": [
-    "activeTab",
     "tabs",
-    "storage"
+    "storage",
+    "contextMenus"
   ],
-  
   "browser_action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -31,7 +30,7 @@
     "default_title": "sous"
   },
   "background": {
-    "scripts": ["static/js/background.js"],
+    "scripts": ["background.js"],
     "persistent": false
   },
   "content_scripts": []
