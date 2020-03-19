@@ -161,7 +161,8 @@ module.exports = function(webpackEnv) {
         // changing JS code would still trigger a refresh.
       ].filter(Boolean),
       // other scripts for the extension
-      background: paths.appBackgroundJs,
+      background: paths.extBackgroundJs,
+      contentScript: paths.extContentScriptJs,
     },
     output: {
       // The build folder.
@@ -661,7 +662,8 @@ module.exports = function(webpackEnv) {
         new ChromeExtensionReloader({
           reloadPage: true,
           entries: {
-            background: 'background'
+            background: 'background',
+            contentScript: 'contentScript'
           }
         }),
     ].filter(Boolean),

@@ -13,9 +13,12 @@
   "name": "sous",
   "description": "Skip to the good part.",
   "permissions": [
+    "activeTab",
     "tabs",
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "http://*/",
+    "https://*/"
   ],
   "browser_action": {
     "default_popup": "index.html",
