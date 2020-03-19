@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "version": "0.0.1",
+  "minimum_chrome_version": "52",
+  "icons": {
+    "128": "icons/idle/icon-128.png",
+    "64" : "icons/idle/icon-64.png",
+    "48" : "icons/idle/icon-48.png",
+    "32" : "icons/idle/icon-32.png",
+    "24" : "icons/idle/icon-24.png",
+    "16" : "icons/idle/icon-16.png"
+  },
+  "name": "sous",
+  "description": "Skip to the good part.",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "contextMenus",
+    "http://*/",
+    "https://*/"
+  ],
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "128": "icons/idle/icon-128.png",
+      "64" : "icons/idle/icon-64.png",
+      "48" : "icons/idle/icon-48.png",
+      "32" : "icons/idle/icon-32.png",
+      "24" : "icons/idle/icon-24.png",
+      "16" : "icons/idle/icon-16.png"
+    },
+    "default_title": "sous"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": []
+}
