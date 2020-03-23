@@ -1,12 +1,13 @@
 import { Store } from 'webext-redux';
-import { countSelector } from './store';
+import { requestId } from './extensionUtils';
 
-const proxyStore = new Store();
+const main = (proxyStore) => () => {
+};
 
-proxyStore.ready().then(() => {
-  proxyStore.subscribe(() => {
-    const state = proxyStore.getState();
-    const count = countSelector(state);
-    console.log(count);
-  });
-});
+// guard against double injections
+if (window._SOUS_CONTENT_SCRIPT_INJECTED !== true) {
+  const proxyStore = new Store();
+  window._SOUS_CONTENT_SCRIPT_INJECTED = true;
+  requestId();
+  proxyStore.ready().then(main(proxyStore));
+}
