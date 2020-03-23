@@ -1,4 +1,27 @@
 /* global chrome */
+
+// change the extension icon for a tab or all tabs
+const setIcon = (name, tabId) => {
+  if (tabId === "content_script") {
+    chrome.runtime.sendMessage({
+      _UTIL_ACTION: '_UTILS_SET_ICON',
+      _UTIL_PAYLOAD: name,
+    });
+  } else {
+    const path = [128,64,48,32,24,16].reduce( (dict, size) => { 
+      return {
+        ...dict, 
+        [size]: `icons/${name}/icon-${size}.png` 
+      } 
+    });
+  
+    chrome.browserAction.setIcon({
+      path: path,
+      tabId,
+    });
+  }
+};
+
 // inject a script (won't inject if already injected)
 const injection = updateState => tabId => {
   chrome.tabs.get(tabId, ({url}) => {
@@ -17,7 +40,11 @@ const listen = () => {
   chrome.runtime.onMessage.addListener( (message, sender, reply) => {
     const tabId = sender.tab.id;
     const payload = message._UTIL_PAYLOAD;
-    switch (message._UTIL_ACTION) {      
+    switch (message._UTIL_ACTION) {
+      case '_UTILS_SET_ICON':
+          setIcon(payload, tabId);
+        break;
+      
       case '_UTILS_ECHO_ID':
           chrome.tabs.sendMessage(tabId, {_UTIL_ACTION: '_UTILS_ECHO_ID', _UTIL_PAYLOAD: tabId });
         break;
@@ -41,4 +68,4 @@ const requestId = () => {
 
 const getId = () => window._SOUS_CONTENT_SCRIPT_SELF_ID;
 
-export { injection, listen, requestId, getId };
+export { setIcon, injection, listen, requestId, getId };

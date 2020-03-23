@@ -1,7 +1,13 @@
 import { Store } from 'webext-redux';
-import { requestId } from './extensionUtils';
+import { detector } from './recipes';
+import { setIcon, requestId } from './extensionUtils';
 
 const main = (proxyStore) => () => {
+  const recipeFound = detector.find(document);
+  console.log(recipeFound);
+  if (recipeFound) {
+    setIcon('active', 'content_script');
+  }
 };
 
 // guard against double injections
