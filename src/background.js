@@ -77,23 +77,14 @@ const inject = injection(tabId => store.dispatch(scriptInjected(tabId)));
 
 
 // wrap selectors so that we can respond to changes
-const selectActiveTabs = wrapSelector(getActiveTabs, arrayEqual);
 const selectNotInjected = wrapSelector(getNotInjected, arrayEqual);
 // find changed elements in the array
-const monitorActiveTabs = arrayChanged();
 const monitorNotInjected = arrayChanged();
 
 // respond to all state changes
 store.subscribe(() => {
   const state = store.getState();
-  const [active, activeChanged] = selectActiveTabs(state);
   const [notInjected, notInjectedChanged] = selectNotInjected(state);
-  
-  if (activeChanged) {
-    const activated = monitorActiveTabs(active);
-    // inject to all active tabs that are not already marked as injected
-    activated.filter(tabId => !isInjected(state, tabId) ).forEach(inject);
-  }
 
   if (notInjectedChanged) {
     // inject to the tab which was just unloaded
