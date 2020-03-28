@@ -1,12 +1,15 @@
-import { Store } from 'webext-redux';
-import { detector } from './recipes';
-import { setIcon, requestId } from './extensionUtils';
+import { Store } from "webext-redux";
+import { detector } from "./recipes";
+import { requestId } from "./extensionUtils";
+import { sousActive } from "./store/slices/browser";
 
-const main = (proxyStore) => () => {
+const main = (proxyStore, tabId) => () => {
+  console.log("ready");
   const recipeFound = detector.find(document);
   console.log(recipeFound);
   if (recipeFound) {
-    setIcon('active', 'content_script');
+    console.log(tabId);
+    proxyStore.dispatch(sousActive(tabId));
   }
 };
 
@@ -14,6 +17,7 @@ const main = (proxyStore) => () => {
 if (window._SOUS_CONTENT_SCRIPT_INJECTED !== true) {
   const proxyStore = new Store();
   window._SOUS_CONTENT_SCRIPT_INJECTED = true;
-  requestId();
-  proxyStore.ready().then(main(proxyStore));
+  requestId().then(tabId => {
+    proxyStore.ready().then(main(proxyStore, tabId));
+  });
 }
