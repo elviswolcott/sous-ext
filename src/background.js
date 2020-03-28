@@ -1,7 +1,7 @@
 /* global chrome */
 // eslint-disable-next-line no-unused-vars
 import { store } from "./store";
-import { listen, injection } from "./extensionUtils";
+import { listen, injection, setIcon } from "./extensionUtils";
 import {
   tabActivated,
   tabAttached,
@@ -9,13 +9,13 @@ import {
   scriptInjected,
   tabOpened,
   tabReloaded,
-  getActiveTabs,
-  isInjected,
   getNotInjected,
   tabClosed,
   windowClosed,
   windowOpened,
   tabDetached,
+  getInactive,
+  getActive,
 } from "./store/slices/browser";
 import { wrapSelector, arrayEqual, arrayChanged } from "./reduxUtils";
 
@@ -94,19 +94,43 @@ chrome.tabs.onAttached.addListener((tabId, { newWindowId: windowId }) => {
 
 // create an inject function that will update the state by dispatching scriptInjected
 const inject = injection((tabId) => store.dispatch(scriptInjected(tabId)));
+// show the idle icon
+const showIdle = (tabId) => {
+  setIcon("idle", tabId);
+};
+// show the idle icon
+const showActive = (tabId) => {
+  setIcon("active", tabId);
+};
 
 // wrap selectors so that we can respond to changes
 const selectNotInjected = wrapSelector(getNotInjected, arrayEqual);
+const selectInactive = wrapSelector(getInactive, arrayEqual);
+const selectActive = wrapSelector(getActive, arrayEqual);
 // find changed elements in the array
 const monitorNotInjected = arrayChanged();
+const monitorInactive = arrayChanged();
+const monitorActive = arrayChanged();
 
 // respond to all state changes
 store.subscribe(() => {
   const state = store.getState();
   const [notInjected, notInjectedChanged] = selectNotInjected(state);
+  const [inactive, inactiveChanged] = selectInactive(state);
+  const [active, activeChanged] = selectActive(state);
 
   if (notInjectedChanged) {
     // inject to the tab which was just unloaded
     monitorNotInjected(notInjected).forEach(inject);
+  }
+
+  if (inactiveChanged) {
+    // activate the tab which was just activated
+    monitorInactive(inactive).forEach(showIdle);
+  }
+
+  if (activeChanged) {
+    // activate the tab which was just activated
+    monitorActive(active).forEach(showActive);
   }
 });

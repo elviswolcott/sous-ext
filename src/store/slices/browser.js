@@ -53,6 +53,7 @@ const { reducer: browser, actions } = createSlice({
       state.tabsById[tabId] = {
         url: null,
         contentScriptInjected: false,
+        active: false,
       };
       state.windowsById[windowId].tabs.push(tabId);
     },
@@ -94,6 +95,7 @@ const { reducer: browser, actions } = createSlice({
       let tab = state.tabsById[tabId];
       tab.url = url;
       tab.contentScriptInjected = false;
+      tab.active = false;
     },
     // fired when the content script is injected
     scriptInjected: (state, { payload: tabId }) => {
@@ -103,6 +105,12 @@ const { reducer: browser, actions } = createSlice({
     tabReloaded: (state, { payload: tabId }) => {
       let tab = state.tabsById[tabId];
       tab.contentScriptInjected = false;
+      tab.active = false;
+    },
+    // fired from the content script
+    sousActive: (state, { payload: tabId }) => {
+      let tab = state.tabsById[tabId];
+      tab.active = true;
     },
   },
 });
@@ -125,6 +133,22 @@ const getNotInjected = (state) => {
   );
 };
 
+const isActive = (state, tabId) => {
+  return getBrowserSlice(state).tabsById[tabId].active;
+};
+
+const getInactive = (state) => {
+  return getBrowserSlice(state).allTabs.filter(
+    (tabId) => !isActive(state, tabId)
+  );
+};
+
+const getActive = (state) => {
+  return getBrowserSlice(state).allTabs.filter((tabId) =>
+    isActive(state, tabId)
+  );
+};
+
 // destructure actions
 const {
   tabActivated,
@@ -137,6 +161,7 @@ const {
   tabNavigated,
   scriptInjected,
   tabReloaded,
+  sousActive,
 } = actions;
 
 export {
@@ -150,9 +175,12 @@ export {
   tabAttached,
   tabNavigated,
   scriptInjected,
+  sousActive,
   tabReloaded,
   getBrowserSlice,
   getActiveTabs,
   isInjected,
   getNotInjected,
+  getInactive,
+  getActive,
 };
