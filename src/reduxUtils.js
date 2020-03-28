@@ -2,8 +2,10 @@
 // returns [result, resultChanged]
 const wrapSelector = (selector, equalityFn) => {
   let last = null;
-  const equal = equalityFn ? (a,b) => a === b || equalityFn(a,b) : (a,b) => a === b;
-  return state => {
+  const equal = equalityFn
+    ? (a, b) => a === b || equalityFn(a, b)
+    : (a, b) => a === b;
+  return (state) => {
     const result = selector(state);
     if (!equal(result, last)) {
       last = result;
@@ -11,12 +13,13 @@ const wrapSelector = (selector, equalityFn) => {
     } else {
       return [last, false];
     }
-  }
+  };
 };
 
 // simple array equality
-const arrayEqual = (a,b) => {
-  if (a === undefined || b === undefined || a === null || b === null) return false;
+const arrayEqual = (a, b) => {
+  if (a === undefined || b === undefined || a === null || b === null)
+    return false;
   if (a.length !== b.length) return false;
   for (const index in a) {
     if (a[index] !== b[index]) return false;
@@ -30,7 +33,7 @@ const arrayEqual = (a,b) => {
 // only reports inserts and updates (which is all that matters for many cases)
 const arrayChanged = () => {
   let last = null;
-  return array => {
+  return (array) => {
     if (last === null) {
       last = array;
       return array;
@@ -39,26 +42,27 @@ const arrayChanged = () => {
     let oldLength = last.length;
     let newLength = array.length;
     let changes;
-    
+
     if (oldLength === 0) {
       // everything has changed compared to an empty array
       changes = array;
     } else if (newLength < oldLength) {
       // item removed
-      changes = []
+      changes = [];
     } else {
       // item inserted or updated
-      let posArray = newLength, posLast = oldLength;
+      let posArray = newLength,
+        posLast = oldLength;
       // move from end until mismatch
       while (array[posArray] === last[posLast]) {
         posArray--;
         posLast--;
       }
-      changes = [array[posArray]]
+      changes = [array[posArray]];
     }
     last = array;
     return changes;
-  }
+  };
 };
 
 export { wrapSelector, arrayEqual, arrayChanged };
