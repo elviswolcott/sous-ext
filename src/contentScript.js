@@ -4,11 +4,8 @@ import { requestId } from "./extensionUtils";
 import { sousActive } from "./store/slices/browser";
 
 const main = (proxyStore, tabId) => () => {
-  console.log("ready");
   const recipeFound = detector.find(document);
-  console.log(recipeFound);
   if (recipeFound) {
-    console.log(tabId);
     proxyStore.dispatch(sousActive(tabId));
   }
 };
