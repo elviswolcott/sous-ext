@@ -5,31 +5,31 @@ const setIcon = (name, tabId) => {
   if (tabId === "content_script") {
     chrome.runtime.sendMessage({
       _UTIL_ACTION: "_UTILS_SET_ICON",
-      _UTIL_PAYLOAD: name
+      _UTIL_PAYLOAD: name,
     });
   } else {
     const path = [128, 64, 48, 32, 24, 16].reduce((dict, size) => {
       return {
         ...dict,
-        [size]: `icons/${name}/icon-${size}.png`
+        [size]: `icons/${name}/icon-${size}.png`,
       };
     });
 
     chrome.browserAction.setIcon({
       path: path,
-      tabId
+      tabId,
     });
   }
 };
 
 // inject a script (won't inject if already injected)
-const injection = updateState => tabId => {
+const injection = (updateState) => (tabId) => {
   chrome.tabs.get(tabId, ({ url }) => {
     // only inject into webpages
     if (url.startsWith("https://") || url.startsWith("http://")) {
       updateState(tabId);
       chrome.tabs.executeScript(tabId, {
-        file: "contentScript.js"
+        file: "contentScript.js",
       });
     }
   });
@@ -48,7 +48,7 @@ const listen = () => {
       case "_UTILS_ECHO_ID":
         chrome.tabs.sendMessage(tabId, {
           _UTIL_ACTION: "_UTILS_ECHO_ID",
-          _UTIL_PAYLOAD: tabId
+          _UTIL_PAYLOAD: tabId,
         });
         break;
 
@@ -59,9 +59,9 @@ const listen = () => {
 };
 
 const requestId = () => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     chrome.runtime.sendMessage({ _UTIL_ACTION: "_UTILS_ECHO_ID" });
-    chrome.runtime.onMessage.addListener(message => {
+    chrome.runtime.onMessage.addListener((message) => {
       if (message._UTIL_ACTION === "_UTILS_ECHO_ID") {
         resolve(message._UTIL_PAYLOAD);
       }

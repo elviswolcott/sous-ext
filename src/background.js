@@ -15,7 +15,7 @@ import {
   windowOpened,
   tabDetached,
   getInactive,
-  getActive
+  getActive,
 } from "./store/slices/browser";
 import { wrapSelector, arrayEqual, arrayChanged } from "./reduxUtils";
 
@@ -24,13 +24,13 @@ listen();
 
 // get all tabs and windows set up
 // redux-batch ensures this all calls the subscriber once
-chrome.tabs.query({}, allTabs => {
+chrome.tabs.query({}, (allTabs) => {
   const initActions = allTabs.reduce(
     (actions, { active, id: tabId, windowId, url }) => {
       const items = [
         tabAttached({ tabId, windowId }),
         tabOpened({ tabId, windowId }),
-        tabNavigated({ tabId, url })
+        tabNavigated({ tabId, url }),
       ];
       active && items.push(tabActivated({ tabId, windowId }));
       return [...actions, ...items];
@@ -41,7 +41,7 @@ chrome.tabs.query({}, allTabs => {
 });
 
 // dispatch actions based on changes to tabs & windows
-chrome.tabs.onActivated.addListener(event => {
+chrome.tabs.onActivated.addListener((event) => {
   store.dispatch(tabActivated(event));
 });
 
@@ -72,7 +72,7 @@ chrome.tabs.onRemoved.addListener((tabId, { windowId }) => {
   store.dispatch(tabClosed({ tabId, windowId }));
 });
 
-chrome.windows.onRemoved.addListener(windowId => {
+chrome.windows.onRemoved.addListener((windowId) => {
   store.dispatch(windowClosed(windowId));
 });
 
@@ -93,13 +93,13 @@ chrome.tabs.onAttached.addListener((tabId, { newWindowId: windowId }) => {
 });
 
 // create an inject function that will update the state by dispatching scriptInjected
-const inject = injection(tabId => store.dispatch(scriptInjected(tabId)));
+const inject = injection((tabId) => store.dispatch(scriptInjected(tabId)));
 // show the idle icon
-const showIdle = tabId => {
+const showIdle = (tabId) => {
   setIcon("idle", tabId);
 };
 // show the idle icon
-const showActive = tabId => {
+const showActive = (tabId) => {
   setIcon("active", tabId);
 };
 

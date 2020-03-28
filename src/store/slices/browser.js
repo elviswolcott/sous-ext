@@ -8,7 +8,7 @@ const { reducer: browser, actions } = createSlice({
     allTabs: [], // list of all tab ids
     tabsById: {}, // tabs and related info (status, content, script status)
     allWindows: [], // list of all window ids
-    windowsById: {} // windows and related info (tabs, active tab)
+    windowsById: {}, // windows and related info (tabs, active tab)
   },
   reducers: {
     // fired in response to chrome.tabs.onActivated
@@ -18,7 +18,7 @@ const { reducer: browser, actions } = createSlice({
         state.allWindows.push(windowId);
         state.windowsById[windowId] = {
           active: null,
-          tabs: []
+          tabs: [],
         };
       }
       // change the active tab for the window
@@ -53,7 +53,7 @@ const { reducer: browser, actions } = createSlice({
       state.tabsById[tabId] = {
         url: null,
         contentScriptInjected: false,
-        active: false
+        active: false,
       };
       state.windowsById[windowId].tabs.push(tabId);
     },
@@ -63,7 +63,7 @@ const { reducer: browser, actions } = createSlice({
       state.allWindows.push(windowId);
       state.windowsById[windowId] = {
         active: null,
-        tabs: []
+        tabs: [],
       };
     },
     // fired in response to chrome.tabs.onDetached
@@ -84,7 +84,7 @@ const { reducer: browser, actions } = createSlice({
         state.allWindows.push(windowId);
         state.windowsById[windowId] = {
           active: null,
-          tabs: []
+          tabs: [],
         };
       }
       let window = state.windowsById[windowId];
@@ -111,25 +111,25 @@ const { reducer: browser, actions } = createSlice({
     sousActive: (state, { payload: tabId }) => {
       let tab = state.tabsById[tabId];
       tab.active = true;
-    }
-  }
+    },
+  },
 });
 
 // slice selector
-const getBrowserSlice = state => state.browser;
+const getBrowserSlice = (state) => state.browser;
 
 // get the active tab for each window
-const getActiveTabs = createSelector(getBrowserSlice, browser => {
-  return browser.allWindows.map(id => browser.windowsById[id].active);
+const getActiveTabs = createSelector(getBrowserSlice, (browser) => {
+  return browser.allWindows.map((id) => browser.windowsById[id].active);
 });
 
 const isInjected = (state, tabId) => {
   return getBrowserSlice(state).tabsById[tabId].contentScriptInjected;
 };
 
-const getNotInjected = state => {
+const getNotInjected = (state) => {
   return getBrowserSlice(state).allTabs.filter(
-    tabId => !isInjected(state, tabId)
+    (tabId) => !isInjected(state, tabId)
   );
 };
 
@@ -137,14 +137,16 @@ const isActive = (state, tabId) => {
   return getBrowserSlice(state).tabsById[tabId].active;
 };
 
-const getInactive = state => {
+const getInactive = (state) => {
   return getBrowserSlice(state).allTabs.filter(
-    tabId => !isActive(state, tabId)
+    (tabId) => !isActive(state, tabId)
   );
 };
 
-const getActive = state => {
-  return getBrowserSlice(state).allTabs.filter(tabId => isActive(state, tabId));
+const getActive = (state) => {
+  return getBrowserSlice(state).allTabs.filter((tabId) =>
+    isActive(state, tabId)
+  );
 };
 
 // destructure actions
@@ -159,7 +161,7 @@ const {
   tabNavigated,
   scriptInjected,
   tabReloaded,
-  sousActive
+  sousActive,
 } = actions;
 
 export {
@@ -180,5 +182,5 @@ export {
   isInjected,
   getNotInjected,
   getInactive,
-  getActive
+  getActive,
 };

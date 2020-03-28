@@ -17,7 +17,7 @@ const main = (proxyStore, tabId) => () => {
 if (window._SOUS_CONTENT_SCRIPT_INJECTED !== true) {
   const proxyStore = new Store();
   window._SOUS_CONTENT_SCRIPT_INJECTED = true;
-  requestId().then(tabId => {
+  requestId().then((tabId) => {
     proxyStore.ready().then(main(proxyStore, tabId));
   });
 }
