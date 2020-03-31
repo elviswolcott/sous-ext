@@ -75,7 +75,9 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "watch": "node scripts/watch.js",
-    "devtools": "remotedev --hostname=localhost --port=8000"
+    "devtools": "remotedev --hostname=localhost --port=8000",
+    "version": "node scripts/sync-version.js && prettier public/manifest.json --write && git add public/manifest.json",
+    "postversion": "git push && git push --tags"
   },
   "eslintConfig": {
     "extends": "react-app"
